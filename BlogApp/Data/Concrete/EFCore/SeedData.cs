@@ -47,12 +47,14 @@ public class SeedData
                     ,Content = "asp net core eğitimi"
                     ,IsActive = true
                     ,CreatedAt = DateTime.Now.AddDays(-10)
+                    ,Image = "/images/postimages/asp.jpg"
                     ,Tags = context.Tags.Take(3).ToList()
                     ,UserId = 1},
                 new Post(){Title = "next.js"
                     ,Content = "javascript camp"
                     ,IsActive = true
                     ,CreatedAt = DateTime.Now.AddDays(-2)
+                    ,Image = "/images/postimages/next.jpg"
                     ,Tags = context.Tags.Take(2).ToList()
                     ,UserId = 2}
             );

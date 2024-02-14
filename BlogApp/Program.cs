@@ -1,4 +1,5 @@
 
+using BlogApp.Data.Abstract;
 using BlogApp.Data.Concrete.EFCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,6 +17,8 @@ builder.Services.AddDbContextPool<BlogContext>(opt =>
     opt.EnableSensitiveDataLogging(true);
 });
 
+builder.Services.AddScoped<IPostRepository, EFPostRepository>();
+builder.Services.AddScoped<ITagRepository, EFTagRepository>();
 
 var app = builder.Build();
 
