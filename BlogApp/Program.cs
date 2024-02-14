@@ -1,7 +1,21 @@
+
+using BlogApp.Data.Concrete.EFCore;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+var connectionString = builder.Configuration.GetConnectionString("sqlConnection");
+
+builder.Services.AddDbContextPool<BlogContext>(opt =>
+{
+    opt.UseMySql(connectionString, new MySqlServerVersion(new Version(10, 4, 28)));
+    // geliştirmede bu olabilir
+    opt.EnableSensitiveDataLogging(true);
+});
+
 
 var app = builder.Build();
 
@@ -23,5 +37,7 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+SeedData.TestDatas(app);
 
 app.Run();
