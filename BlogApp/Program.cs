@@ -1,5 +1,6 @@
 
 using BlogApp.Data.Abstract;
+using BlogApp.Data.Concrete;
 using BlogApp.Data.Concrete.EFCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,6 +20,7 @@ builder.Services.AddDbContextPool<BlogContext>(opt =>
 
 builder.Services.AddScoped<IPostRepository, EFPostRepository>();
 builder.Services.AddScoped<ITagRepository, EFTagRepository>();
+builder.Services.AddScoped<ICommentRepository, EFCommentRepository>();
 
 var app = builder.Build();
 
@@ -36,6 +38,20 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+
+// localhost://posts/react-dersleri
+
+app.MapControllerRoute(
+    name: "post_details",
+    pattern: "posts/tag/{tag}",
+    defaults:new {controller="Posts",action="Index"});
+
+/*app.MapControllerRoute(
+    name: "post_by_tag",
+    pattern: "posts/details/{url}",
+    defaults:new {controller="Posts",action="Details"});*/
+
+
 
 app.MapControllerRoute(
     name: "default",

@@ -1,0 +1,139 @@
+@model Post
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="bg-white p-4">
+            <h1 class="h4 mb-4">@Model?.Title</h1>
+            <div class="tags">
+                @foreach (var item in Model.Tags)
+                {
+                    <a href="posts/tag/@item.Url" class="badge bg-@item.Color bg-opacity-10 text-@item.Color mb-2 fw-bold">@item.Text</a>
+                }
+            </div>
+            <img src="@Model?.Image" class="img-fluid rounded" alt="@Model.Title"/>
+            <div>
+                @Model.Content
+            </div>
+        </div>
+        <div class="bg-white mt-3">
+            <div class="card border-0">
+                <div class="card-header pb-0">
+                    <h4>@Model.Comments.Count() adet yorum</h4>
+                </div>
+                <div class="card-body">
+                    <div id="comments">
+                        @foreach (var item in Model.Comments)
+                        {
+                            <div class="my-4 d-flex">
+                                <img class="avatar rounded-circle float-start me-3" alt="user_image" src="@item.User.Image"/>
+                                <div>
+                                    <div class="mb-2">
+                                        <h6 class="me-2">@item.User.Username</h6>
+                                        <small>@item.CreatedAt.ToString("g")</small>
+                                    </div>
+                                    <p>@item.Text</p>
+                                </div>
+
+                            </div>
+                        }
+                    </div>
+                    
+                </div>
+                <hr class="my-3"/>
+                <div>
+                    <h4>Yorum Ekle</h4>
+                    <form asp-action="AddComment" asp-controller="Posts" method="post">
+                        <input type="hidden" name="PostId" id="PostId" value="@Model.PostId"/>
+                        <input type="hidden" name="Url" id="Url" value="/posts/@Model.Url"/>
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label">Username</label>
+                            <input type="text" name="Username" id="Username" class="form-control"/>
+                        </div>
+                        
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label">Yorum</label>
+                            <textarea type="text" name="Text" rows="3" id="Text" class="form-control"></textarea>
+                        </div>
+                        
+                        <div class="col-md-12 mb-3">
+                            <button id="btnYorumKayit" type="submit" class="btn btn-primary">Kaydet</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        @{
+            //await Component.InvokeAsync("TagsMenu",Model.Tags)
+        }
+        @await Component.InvokeAsync("TagsMenu")
+        
+        @await Component.InvokeAsync("NewPosts")
+        
+        <!---<vc:tags-menu></vc:tags-menu>
+        buda çalışır ama ben diğerini istiyorum
+        -->
+    </div>
+</div>
+
+@{
+    // ajax js sadece idler ile çalışabiliyor
+}
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+        
+
+        console.log($('#PostId').val())
+        console.log($('#Username').val())
+        console.log($('#Text').val())
+
+        $("#btnYorumKayit").click(function() {
+            $.ajax({
+                type: 'POST',
+                //url: '@Url.Action("AddComment")',
+                //url:"https://localhost:7267/Posts/AddComment",
+                url: @Url.Action("AddComment"),
+                dataType: 'json',
+                data: {
+                    PostId: $('#PostId').val(),
+                    Username: $('#UserName').val(),
+                    Text: $('#Text').val(),
+                },
+                success: function(yorum) {
+                    console.log(yorum);
+                    var date = new Date(yorum.CreatedAt);
+
+                    $("#comments").append(`
+                        <div class="my-4 d-flex">
+                            <img src="/img/${yorum.Image}" alt="" class="avatar rounded-circle float-start me-3">
+                            <div>
+                                <div class="mb-2 d-flex">
+                                    <h6 class="me-2">${yorum.Username}</h6>
+                                    <small>${date.toLocaleDateString()}</small>
+                                </div>
+                                <p>${yorum.Text}</p>
+                            </div>
+                        </div>
+                    `);
+
+                    $("#Username").val('');
+                    $("#Text").val('');
+
+                    var adet = parseInt($("#commentCount").text());
+                    $("#commentCount").text(adet + 1);
+                }
+
+                
+            });
+            return false;
+        
+        });
+
+    });
+    </script>
+}

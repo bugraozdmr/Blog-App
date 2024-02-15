@@ -4,21 +4,35 @@
     <div class="col-lg-8">
         <div class="bg-white p-4">
             <h1 class="h4 mb-4">Popular Posts</h1>
-            @foreach(var post in Model.Posts)
+            @if (Model is not null)
             {
-                <div class="card bg-transparent border-0 mb-3">
-                    <div class="row">
-                        <div class="col-4">
-                            <img src="@post.Image" class="img-fluid rounded" alt="">
-                        </div>
-                        <div class="col-8">
-                            <h5><a href="#" class="btn-link fw-bold">@post.Title</a></h5>
-                            <p>@post.Content</p>
-                            <a href="#" class="badge bg-danger bg-opacity-10 text-danger mb-2 fw-bold">Web Development</a>
+                @foreach(var post in Model.Posts)
+                {
+                    <div class="card bg-transparent border-0 mb-3">
+                        <div class="row">
+                            <div class="col-4">
+                                <img src="@post.Image" class="img-fluid rounded" alt="">
+                            </div>
+                            <div class="col-8">
+                                <!-- program.cs'de eşleştirme olacak -->
+                                <h5>
+                                    <a href="/posts/@post.Url" class="btn-link fw-bold">@post.Title</a>
+                                </h5>
+                                <p>@post.Content</p>
+                                @foreach (var tag in post.Tags)
+                                {
+                                    <a href="posts/tag/@tag.Url" class="badge bg-@tag.Color bg-opacity-10 text-@tag.Color mb-2 fw-bold">@tag.Text</a>
+                                }
+                            </div>
                         </div>
                     </div>
+                    <hr class="my-3">
+                }
+            }
+            else{
+                <div class="text-warning">
+                    Post yok
                 </div>
-                <hr class="my-3">
             }
             <nav>
                 <ul class="pagination">
@@ -30,21 +44,15 @@
         </div>
     </div>
     <div class="col-lg-4">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="cart-title">Tags</h5>
-            </div>
-            <div class="card-body">
-                <ul class="list-inline d-flex flex-wrap gap-2">
-                    @foreach(var tag in Model.Tags)
-                    {
-                        <li class="list-inline-item">
-                            <a class="btn btn-outline-secondary btn-sm">@tag.Text</a>
-                        </li>
-                    }
-                </ul>
-            </div>
-        </div>
+        @{
+            //await Component.InvokeAsync("TagsMenu",Model.Tags)
+        }
+        @await Component.InvokeAsync("TagsMenu")
         
+        @await Component.InvokeAsync("NewPosts")
+        
+        <!---<vc:tags-menu></vc:tags-menu>
+            buda çalışır ama ben diğerini istiyorum
+        -->
     </div>
 </div>
