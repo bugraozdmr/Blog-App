@@ -72,9 +72,16 @@ public class PostsController : Controller
     
     [HttpPost]
     //[ValidateAntiForgeryToken]  // name değerleri iletilir
-    public IActionResult AddComment(int PostId,string Username,string Text)
+    public IActionResult AddComment(int PostId,string Username,string Text,string UrlD)
     {
-
+        if (Username is null && Text is null)
+        {
+            //ModelState.AddModelError("","boş değer gönderemezsin");
+            //TempData["message"] = "Girilmesi gereken alanları boş gönderemezsin.";
+            //return RedirectToAction("Details",new {url = UrlD});
+            return BadRequest();
+        }
+        
         var entity = new Comment()
         {
             Text = Text,

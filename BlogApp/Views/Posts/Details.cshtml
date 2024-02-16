@@ -1,6 +1,7 @@
 @using System.Globalization
 @using Microsoft.AspNetCore.Mvc.TagHelpers
 @using BlogApp.Components
+
 @model Post
 
 <div class="row">
@@ -42,11 +43,16 @@
                     </div>
                     
                 </div>
+                
                 <hr class="my-3"/>
+                <div class="text-danger" id="DivError"></div>
                 <div>
                     <h4>Yorum Ekle</h4>
                     <form asp-action="AddComment" asp-controller="Posts" method="post">
+                        <!--<div class="text-danger" asp-validation-summary="All"></div>-->
                         <input type="hidden" name="PostId" id="PostId" value="@Model.PostId"/>
+                        <input type="hidden" name="UrlD" id="UrlD" value="@Model.Url"/>
+                        
                         <div class="col-md-12 mb-3">
                             <label class="form-label">Username</label>
                             <input type="text" name="Username" id="Username" class="form-control"/>
@@ -100,6 +106,7 @@
                     PostId: $('#PostId').val(),
                     Username: $('#Username').val(),
                     Text: $('#Text').val(),
+                    UrlD : $('#UrlD').val()
                 },
                 success: function(yorum) {
                     var date = new Date(yorum.createdAt);
@@ -127,7 +134,12 @@
                     $("#commentCount").text(adet + 1);
                 },
                 error: function(xhr, status, error) {
-                  console.log(xhr.responseText); // Log the error responseText
+                  $("#DivError").append('Girilmesi gereken alanları boş gönderemezsin'+
+                                        '<br>');
+                  
+                          setTimeout(function() {
+                              $("#DivError").empty();
+                          }, 30000); // 30 saniye
                 }
 
                 
