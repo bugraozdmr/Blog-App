@@ -2,7 +2,7 @@ using BlogApp.Data.Abstract;
 using BlogApp.Data.Concrete.EFCore;
 using BlogApp.Entity;
 
-namespace BlogApp.Data.Concrete;
+namespace BlogApp.Data.Concrete.EFCore;
 
 public class EFCommentRepository : ICommentRepository
 {

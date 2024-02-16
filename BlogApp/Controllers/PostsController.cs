@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using BlogApp.Data.Abstract;
 using BlogApp.Data.Concrete.EFCore;
 using BlogApp.Entity;
@@ -32,6 +33,8 @@ public class PostsController : Controller
     [HttpGet("posts")]
     public async Task<IActionResult> Index(string? tag)
     {
+        // cookiedeki bilgiler User.Claims
+        var claims = User.Claims;
         
         // anlık Iqueryable
         var posts = _postRepository.Posts;
@@ -72,23 +75,29 @@ public class PostsController : Controller
     
     [HttpPost]
     //[ValidateAntiForgeryToken]  // name değerleri iletilir
-    public IActionResult AddComment(int PostId,string Username,string Text,string UrlD)
+    public IActionResult AddComment(int PostId,string Text,string UrlD)
     {
-        if (Username is null && Text is null)
+        if (Text is null)
         {
             //ModelState.AddModelError("","boş değer gönderemezsin");
             //TempData["message"] = "Girilmesi gereken alanları boş gönderemezsin.";
             //return RedirectToAction("Details",new {url = UrlD});
             return BadRequest();
         }
+
+        // !! Cookiede tutmak sunucuyu yormaz.artık
+        // ona atamıştık değeri
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var Username = User.FindFirstValue(ClaimTypes.Name);
+        var avatar = User.FindFirstValue(ClaimTypes.UserData);
+        
         
         var entity = new Comment()
         {
             Text = Text,
             CreatedAt = DateTime.Now,
             PostId = PostId,
-            User = new User(){Username = Username,
-            Image = "/images/userimages/user1.png"}
+            UserId = int.Parse(userId ?? "")
         };
         
         _commentRepository.CreateComment(entity);
@@ -102,7 +111,7 @@ public class PostsController : Controller
             Username,
             Text,
             entity.CreatedAt,
-            entity.User.Image
+            avatar    // resim bu 
         });
 
         /*return Ok(new

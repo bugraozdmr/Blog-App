@@ -2,6 +2,7 @@
 using BlogApp.Data.Abstract;
 using BlogApp.Data.Concrete;
 using BlogApp.Data.Concrete.EFCore;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,6 +22,10 @@ builder.Services.AddDbContextPool<BlogContext>(opt =>
 builder.Services.AddScoped<IPostRepository, EFPostRepository>();
 builder.Services.AddScoped<ITagRepository, EFTagRepository>();
 builder.Services.AddScoped<ICommentRepository, EFCommentRepository>();
+builder.Services.AddScoped<IUserRepository, EFUserRepository>();
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie();
 
 var app = builder.Build();
 
@@ -35,8 +40,12 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
+
 app.UseRouting();
 
+// authorization ve authentication için gerekli routing
+app.UseRouting();
+app.UseAuthentication();
 app.UseAuthorization();
 
 // localhost://posts/react-dersleri
