@@ -34,8 +34,8 @@ public class SeedData
         if (!context.Users.Any())
         {
             context.Users.AddRange(
-                new User(){Username = "polat",Image = "/images/userimages/user1.png"},
-                new User(){Username = "grant",Image = "/images/userimages/user2.png"}
+                new User(){Username = "polat",Name = "polat",Email = "polat123@gmail.com",Password = "bugra345",Image = "/images/userimages/user1.png"},
+                new User(){Username = "grant",Name = "bugra",Email= "bugra123@gmail.com",Password = "bugra345",Image = "/images/userimages/user2.png"}
             );
             context.SaveChanges();
         }

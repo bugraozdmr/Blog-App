@@ -96,7 +96,7 @@ public class PostsController : Controller
         //return Redirect($"/posts/{Url}");                                 sildik
         // redirectoroute ile programda tanımlı olanlar çağırılıp sonrasında new {url = Url} denebilirdi
 
-        // şuan çalışıyor sorunsuz
+        // şuan çalışıyor sorunsuz -- json dönmesi lazım dönen değeri jquery kullanacak
         return Json(new
         {
             Username,
