@@ -16,7 +16,7 @@
             </div>
             <img src="@Model?.Image" class="img-fluid rounded" alt="@Model.Title"/>
             <div>
-                @Model.Content
+                @Html.Raw(@Model.Content)
             </div>
         </div>
         <div class="bg-white mt-3">

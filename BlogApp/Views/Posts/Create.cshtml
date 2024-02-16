@@ -1,0 +1,49 @@
+@model CreatePostViewModel
+
+<div class="row">
+    <div class="col-12">
+        <h1>Post Oluştur</h1>
+        <form method="post" asp-action="Create">
+            <div class="text-danger" asp-validation-summary="ModelOnly"></div>
+            
+            <div class="mb-3">
+                <label class="form-label" asp-for="Title"></label>
+                <input asp-for="Title" class="form-control"/>
+                <span class="text-danger" asp-validation-for="Title"></span>
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label" asp-for="Description"></label>
+                <input asp-for="Description" class="form-control"/>
+                <span class="text-danger" asp-validation-for="Description"></span>
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label" asp-for="Content"></label>
+                <input asp-for="Content" class="form-control"/>
+                <span class="text-danger" asp-validation-for="Content"></span>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label" asp-for="Image"></label>
+                <input asp-for="Image" class="form-control"/>
+                <span class="text-danger" asp-validation-for="Image"></span>
+            </div>
+            
+            
+
+            <button type="submit" class="btn btn-primary">Post oluştur</button>
+        </form>
+    </div>
+</div>
+
+
+@section Scripts
+{
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.3/tinymce.min.js" integrity="sha512-VCEWnpOl7PIhbYMcb64pqGZYez41C2uws/M/mDdGPy+vtEJHd9BqbShE4/VNnnZdr7YCPOjd+CBmYca/7WWWCw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        tinymce.init({
+            selector : '#Content'
+        });
+    </script>
+}

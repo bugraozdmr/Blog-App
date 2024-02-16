@@ -1,10 +1,12 @@
 using System.Net;
 using System.Security.Claims;
 using BlogApp.Data.Abstract;
+using BlogApp.Entity;
 using BlogApp.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace BlogApp.Controllers;
 
@@ -99,7 +101,7 @@ public class UsersController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult Register([FromForm] RegisterViewModel model)
+    public async Task<IActionResult> Register([FromForm] RegisterViewModel model)
     {
         if (User.Identity.IsAuthenticated)
         {
@@ -108,10 +110,28 @@ public class UsersController : Controller
 
         if (ModelState.IsValid)
         {
-            
-            
-            
-            return RedirectToAction("Login");
+            var user = await _userRepository
+                .Users
+                .FirstOrDefaultAsync(x => x.Username.Equals(model.Username) || 
+                                          x.Email.Equals(model.Email));
+
+            if (user == null)
+            {
+                _userRepository.CreateUser(new User()
+                {
+                    Username = model.Username,
+                    Name = model.Name,
+                    Email = model.Email,
+                    Password = model.Password,
+                    Image = "/images/userimages/user1.png"
+                });
+                
+                return RedirectToAction("Login");
+            }
+            else
+            {
+                ModelState.AddModelError("","Username ya da email kullanımda");
+            }
         }
         
         return View(model);

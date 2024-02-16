@@ -50,6 +50,7 @@ public class SeedData
                     ,CreatedAt = DateTime.Now.AddDays(-10)
                     ,Image = "/images/postimages/asp.jpg"
                     ,Tags = context.Tags.Take(3).ToList()
+                    ,Description = "asp net core eğitimi sektörde yükseklere."
                     ,UserId = 1
                     ,Comments = new List<Comment>()
                     {   // user ve post ile ilgili değerleri vermeye gerek yok zaten anlar
@@ -62,6 +63,7 @@ public class SeedData
                     ,Url = "next-js"
                     ,Content = "javascript camp"
                     ,IsActive = true
+                    ,Description = "next.js eğitimi sektörde yükseklere."
                     ,CreatedAt = DateTime.Now.AddDays(-2)
                     ,Image = "/images/postimages/next.jpg"
                     ,Tags = context.Tags.Take(2).ToList()
@@ -72,18 +74,21 @@ public class SeedData
                     ,IsActive = true
                     ,CreatedAt = DateTime.Now.AddDays(-60)
                     ,Image = "/images/postimages/next.jpg"
+                    ,Description = "React eğitimi sektörde yükseklere."
                     ,Tags = context.Tags.Take(2).ToList()
                     ,UserId = 2},
                 new Post(){Title = "Django dersleri"
                     ,Url = "Django-dersleri"
                     ,Content = "Django dersleri bizimle öğren"
                     ,IsActive = true
+                    ,Description = "Django eğitimi sektörde yükseklere."
                     ,CreatedAt = DateTime.Now.AddDays(-1)
                     ,Image = "/images/postimages/next.jpg"
                     ,Tags = context.Tags.Take(3).ToList()
                     ,UserId = 1},
                 new Post(){Title = "Python"
                     ,Url = "python-dersleri"
+                    ,Description = "Python eğitimi sektörde yükseklere."
                     ,Content = "Python dersleri bizimle öğren"
                     ,IsActive = true
                     ,CreatedAt = DateTime.Now.AddDays(-5)
@@ -92,6 +97,7 @@ public class SeedData
                     ,UserId = 1},
                 new Post(){Title = "Java dersleri"
                     ,Url = "Java-dersleri"
+                    ,Description = "Java eğitimi sektörde yükseklere."
                     ,Content = "Java dersleri bizimle öğren"
                     ,IsActive = true
                     ,CreatedAt = DateTime.Now.AddDays(-20)

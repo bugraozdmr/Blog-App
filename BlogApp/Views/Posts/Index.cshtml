@@ -18,7 +18,7 @@
                                 <h5>
                                     <a href="/posts/@post.Url" class="btn-link fw-bold">@post.Title</a>
                                 </h5>
-                                <p>@post.Content</p>
+                                <p>@post.Description</p>
                                 @foreach (var tag in post.Tags)
                                 {
                                     <a href="posts/tag/@tag.Url" class="badge bg-@tag.Color bg-opacity-10 text-@tag.Color mb-2 fw-bold">@tag.Text</a>

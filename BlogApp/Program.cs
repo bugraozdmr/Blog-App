@@ -25,7 +25,10 @@ builder.Services.AddScoped<ICommentRepository, EFCommentRepository>();
 builder.Services.AddScoped<IUserRepository, EFUserRepository>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie();
+    .AddCookie(opt =>
+    {
+        opt.LoginPath = "/Users/Login";
+    });
 
 var app = builder.Build();
 

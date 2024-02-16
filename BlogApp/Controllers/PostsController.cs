@@ -3,6 +3,7 @@ using BlogApp.Data.Abstract;
 using BlogApp.Data.Concrete.EFCore;
 using BlogApp.Entity;
 using BlogApp.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -58,6 +59,11 @@ public class PostsController : Controller
     [HttpGet("posts/{url?}")]
     public async Task<IActionResult> Details(string? url)
     {
+        if (_postRepository.Posts.FirstOrDefault(x=>x.Url.Equals(url)) is null)
+        {
+            return RedirectToAction("Index");
+        }
+        
         if (string.IsNullOrEmpty(url))
         {
             return RedirectToAction("Index","Posts");
@@ -121,5 +127,93 @@ public class PostsController : Controller
             entity.CreatedAt,
             entity.User.Image
         });*/
+    }
+
+    [Authorize]
+    [HttpGet("posts/create")]
+    public IActionResult Create()
+    {
+        return View();
+    }
+    
+    
+    [HttpPost]
+    public IActionResult Create([FromForm]CreatePostViewModel model)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        
+        if (ModelState.IsValid)
+        {   // başlangıç olarak isactive false
+            _postRepository.CreatePost(new Post()
+            {
+                IsActive = false,
+                UserId = int.Parse(userId),
+                Title = model.Title,
+                Content = model.Content,
+                Description = model.Description,
+                Image = model.Image,
+                CreatedAt = DateTime.Now,
+                Tags = _tagRepository.Tags.Take(2).ToList(),
+                Url = $"{RemoveNonAlphanumericAndSpecialChars(ReplaceTurkishCharacters(model.Title.Replace(' ', '-').ToLower()))}.{GenerateUniqueHash()}"
+            });
+            return RedirectToAction("Index", "Posts");
+        }
+        return View(model);
+    }
+
+
+    [Authorize]
+    [HttpGet("posts/list")]
+    public async Task<IActionResult> List()
+    {
+        var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "");
+        var role = User.FindFirstValue(ClaimTypes.Role);
+
+        var posts = _postRepository.Posts;
+
+        // role yoksa sadece kendininkileri değişebilir
+        if (string.IsNullOrEmpty(role))
+        {
+            posts = posts.Where(i => i.UserId == userId);
+        }
+        
+        return View(await posts.ToListAsync());
+    }
+    
+    
+    private static string GenerateUniqueHash()
+    {
+        string guid = Guid.NewGuid().ToString("N");
+
+        
+        int length = 6;
+        if (guid.Length < length)
+        {
+            length = guid.Length;
+        }
+
+        string uniqueHash = guid.Substring(0, length);
+
+        return uniqueHash;
+    }
+    
+    private string ReplaceTurkishCharacters(string input)
+    {
+        input = input.Replace("ı", "i").Replace("ğ", "g").Replace("ü", "u").Replace("ş", "s").Replace("ö", "o").Replace("ç", "c");
+        input = input.Replace("İ", "i").Replace("Ğ", "g").Replace("Ü", "u").Replace("Ş", "s").Replace("Ö", "o").Replace("Ç", "c");
+        return input;
+    }
+    
+    private string RemoveNonAlphanumericAndSpecialChars(string input)
+    {
+        // LINQ kullanarak boşluk, tire ve nokta karakterlerini filtrele
+        var filteredCharacters = input
+            .Where(c => char.IsLetterOrDigit(c) || char.IsWhiteSpace(c) || c == '-')
+            .ToArray();
+
+        // Filtrelenmiş karakterleri yeni bir string olarak oluştur
+        string result = new string(filteredCharacters);
+
+        return result;
     }
 }
