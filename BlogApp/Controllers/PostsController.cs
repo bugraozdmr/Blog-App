@@ -72,7 +72,7 @@ public class PostsController : Controller
     
     [HttpPost]
     //[ValidateAntiForgeryToken]  // name değerleri iletilir
-    public IActionResult AddComment(int PostId,string Username,string Text,string Url)
+    public IActionResult AddComment(int PostId,string Username,string Text)
     {
 
         var entity = new Comment()
@@ -89,14 +89,21 @@ public class PostsController : Controller
         //return Redirect($"/posts/{Url}");                                 sildik
         // redirectoroute ile programda tanımlı olanlar çağırılıp sonrasında new {url = Url} denebilirdi
 
-        /*return Json(new
+        // şuan çalışıyor sorunsuz
+        return Json(new
+        {
+            Username,
+            Text,
+            entity.CreatedAt,
+            entity.User.Image
+        });
+
+        /*return Ok(new
         {
             Username,
             Text,
             entity.CreatedAt,
             entity.User.Image
         });*/
-
-        return Redirect($"{Url}");
     }
 }
