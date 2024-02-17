@@ -7,11 +7,23 @@
 <div class="row">
     <div class="col-lg-8">
         <div class="bg-white p-4">
-            <h1 class="h4 mb-4">@Model?.Title</h1>
-            <div class="tags">
+            <h1 class="h4 mb-2">@Model?.Title</h1>
+            
+            <small>
+                <i class="fa fa-calendar" aria-hidden="true"></i>
+                @Model.CreatedAt.ToString("dd MMM yyyy HH:mm", new CultureInfo("tr-TR"))
+            </small>
+            <br>
+            <small>
+                <i class="fa-solid fa-user"></i>
+                <a asp-action="Profile" asp-controller="Users" asp-route-username="@Model.User.Username"
+                   style="text-decoration: none" class="text-warning">@Model.User.Username</a>
+            </small>
+        
+            <div class="tags my-3">
                 @foreach (var item in Model.Tags)
                 {
-                    <a href="posts/tag/@item.Url" class="badge bg-@item.Color bg-opacity-10 text-@item.Color mb-2 fw-bold">@item.Text</a>
+                    <a asp-controller="Posts" asp-action="Index" asp-route-tag="@item.Url" class="badge bg-@item.Color bg-opacity-10 text-@item.Color mb-2 fw-bold">@item.Text</a>
                 }
             </div>
             <img src="@Model?.Image" class="img-fluid rounded" alt="@Model.Title"/>
@@ -32,7 +44,10 @@
                                 <img class="avatar rounded-circle float-start me-3" alt="user_image" src="@item.User.Image"/>
                                 <div>
                                     <div class="mb-2">
-                                        <h6 class="me-2">@item.User.Username</h6>
+                                        <h6 class="me-2">
+                                            <a asp-action="Profile" asp-controller="Users" asp-route-username="@item.User.Username"
+                                               style="text-decoration: none" class="text-secondary">@item.User.Username</a>
+                                        </h6>
                                         <small>@item.CreatedAt.ToString("dd MMM yyyy HH:mm", new CultureInfo("tr-TR"))</small>
                                     </div>
                                     <p>@item.Text</p>

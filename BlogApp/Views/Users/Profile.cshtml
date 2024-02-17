@@ -1,0 +1,141 @@
+
+@model User
+
+<div class="container emp-profile">
+    <form method="post">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="profile-img">
+                    <img src="@Model.Image" alt="user_image" class="img-fluid"/>
+                    <div class="file btn btn-lg btn-primary">
+                        Change Photo
+                        <input type="file" name="file"/>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="profile-head">
+                    <h5>
+                        @Model?.Name
+                    </h5>
+                    <h6>
+                        Web Developer and Designer
+                    </h6>
+                    <p class="proile-rating">RANKINGS : <span>8/10</span></p>
+                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Hakkında</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="posts-tab" data-toggle="tab" href="#posts" role="tab" aria-controls="posts" aria-selected="false">Postlar</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="comments-tab" data-toggle="tab" href="#comments" role="tab" aria-controls="comments" aria-selected="false">Yorumları</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- çalışıyor btw -->
+            <div class="col-md-2">
+                <input type="submit" class="profile-edit-btn" name="btnAddMore" value="Edit Profile"/>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-4">
+                <div class="profile-work">
+                    <p>WORK LINK</p>
+                    <a href="">Website Link</a><br/>
+                    <a href="">Bootsnipp Profile</a><br/>
+                    <a href="">Bootply Profile</a>
+                    <p>SKILLS</p>
+                    <a href="">Web Designer</a><br/>
+                    <a href="">Web Developer</a><br/>
+                    <a href="">WordPress</a><br/>
+                    <a href="">WooCommerce</a><br/>
+                    <a href="">PHP, .Net</a><br/>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="tab-content profile-tab" id="myTabContent">
+                    <!-- home tab --->
+                    <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label>Kullanıcı Adı</label>
+                            </div>
+                            <div class="col-md-6">
+                                <p>@Model?.Username</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label>Email</label>
+                            </div>
+                            <div class="col-md-6">
+                                <p>@Model.Email</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label>Profession</label>
+                            </div>
+                            <div class="col-md-6">
+                                <p>Web Developer and Designer</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- comments tab --->
+                    <div class="tab-pane fade" id="posts" role="tabpanel" aria-labelledby="posts-tab">
+                        @foreach (var item in Model.Posts)
+                        {
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label>@item.CreatedAt.Date.ToString("dd MMM yyyy", new CultureInfo("tr-TR"))</label>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><a asp-action="Details" asp-controller="Posts" asp-route-url="@item.Url">@item.Title</a></p>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    
+                    <!-- posts tab --->
+                    <div class="tab-pane fade" id="comments" role="tabpanel" aria-labelledby="comments-tab">
+                        @foreach (var item in Model.Comments)
+                        {
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <label>@item.CreatedAt.Date.ToString("dd MMM yyyy", new CultureInfo("tr-TR"))</label>
+                                </div>
+                                <div class="col-md-3">
+                                    <p><a asp-action="Details" asp-controller="Posts" asp-route-url="@item.Post.Url"><u>[@item.Post.Url]</u></a></p>
+                                </div>
+                                <div class="col-md-7">
+                                    <p>@(item.Text.Length > 30 ? item.Text.Substring(0, 30) + "..." : item.Text)</p>
+                                </div>
+                            </div>
+                        }
+                    
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>           
+</div>
+
+
+
+@section Scripts
+{
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('.nav-tabs a').click(function(){
+                $(this).tab('show');
+            });
+        });
+    </script>
+}

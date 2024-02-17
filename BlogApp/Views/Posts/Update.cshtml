@@ -1,0 +1,83 @@
+@model EditPostViewModel
+
+
+<h1>Post Düzenle</h1>
+<form method="post" asp-action="Update">
+    <div class="row">
+        <div class="col-9">
+            <div class="text-danger" asp-validation-summary="ModelOnly"></div>
+
+            <input type="hidden" asp-for="PostId" value="@Model.PostId"/>
+
+            <div class="mb-3">
+                <label class="form-label" asp-for="Title"></label>
+                <input asp-for="Title" class="form-control"/>
+                <span class="text-danger" asp-validation-for="Title"></span>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label" asp-for="Description"></label>
+                <input asp-for="Description" class="form-control"/>
+                <span class="text-danger" asp-validation-for="Description"></span>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label" asp-for="Content"></label>
+                <input asp-for="Content" class="form-control"/>
+                <span class="text-danger" asp-validation-for="Content"></span>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label" asp-for="Image"></label>
+                <input asp-for="Image" class="form-control"/>
+                <span class="text-danger" asp-validation-for="Image"></span>
+            </div>
+
+
+            <!---- User.FindFirstValue(CalimTypes.Role) == "admin" demis hoca ama benimki zaten çalışıyor 
+            bunu kullanmak için view importsa eklenmeli System.Security.Claims 
+            ya da kendi bu sayfanın en başına ekler ama olmasa daha iyi ---->
+            @if (User.IsInRole("Admin"))
+            {
+                <!--- başka biri göndermek isterse formu bunsuz false gider o sorun ---->
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" asp-for="isActive" checked="@Model.isActive">
+                    <label class="form-check-label" for="flexSwitchCheckDefault" asp-for="isActive"/>
+                </div>
+            }
+
+            <button type="submit" class="btn btn-primary">Post Düzenle</button>
+        </div>
+        <div class="col-3">
+            <div class="bg-secondary p-2">
+                @foreach (var item in ViewBag?.Tags)
+                {
+                    <div class="form-check">
+                        <!-- ikisinede aynı tag verilince labela tıklayıncada sayar artık -->
+                        <input class="form-check-input"
+                               type="checkbox"
+                               id="tag_@item.TagId"
+                               name="TagIds"
+                               value="@item.TagId" id="flexCheckDefault"
+                               checked="@(Model.Tags.Any(i => i.Text.Equals(item.Text)))">
+                        <label class="form-check-label text-white" for="tag_@item.TagId">
+                            @item.Text
+                        </label>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</form>
+
+
+
+@section Scripts
+{
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.3/tinymce.min.js" integrity="sha512-VCEWnpOl7PIhbYMcb64pqGZYez41C2uws/M/mDdGPy+vtEJHd9BqbShE4/VNnnZdr7YCPOjd+CBmYca/7WWWCw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        tinymce.init({
+            selector : '#Content'
+        });
+    </script>
+}

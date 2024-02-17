@@ -137,4 +137,40 @@ public class UsersController : Controller
         return View(model);
     }
 
+
+    [HttpGet("users/profile/{username}")]
+    public IActionResult Profile(string username)
+    {
+        if (username is null)
+        {
+            return NotFound();
+        }
+        
+        var user = _userRepository
+            .Users
+            .Include(x => x.Posts)
+            .Include(x => x.Comments)
+            .ThenInclude(c => c.Post)
+            .FirstOrDefault(x => x.Username.Equals(username));
+
+        if (user is null)
+        {
+            return NotFound();
+        }
+        
+        // sıralı olarak gitsin -- ve max 20 gitsin
+        user.Posts = user
+            .Posts
+            .OrderByDescending(p => p.CreatedAt)
+            .Take(20)
+            .ToList();
+
+        user.Comments = user
+            .Comments
+            .OrderByDescending(c => c.CreatedAt)
+            .Take(20)
+            .ToList();
+        
+        return View(user);
+    }
 }

@@ -24,6 +24,8 @@ public class PostsController : Controller
         _commentRepository = commentRepository;
     }
 
+    // routelar çok karışık adam akıllı olması için düzenlenmeli
+    
     [HttpGet("posts/index")]
     public IActionResult RedirectToPosts()
     {
@@ -31,7 +33,8 @@ public class PostsController : Controller
     }
 
     
-    [HttpGet("posts")]
+    [HttpGet("posts/tag/{tag}")]
+    [HttpGet("posts/")]     // bunu ekleyerek çözdüm
     public async Task<IActionResult> Index(string? tag)
     {
         // cookiedeki bilgiler User.Claims
@@ -49,6 +52,7 @@ public class PostsController : Controller
         {
             // gelen post kullanılır
             Posts = await posts
+                .Where(i => i.IsActive.Equals(true))
                 .Include(x => x.Tags)
                 .ToListAsync()
             //Tags = _tagRepository.Tags.ToList()
@@ -59,7 +63,8 @@ public class PostsController : Controller
     [HttpGet("posts/{url?}")]
     public async Task<IActionResult> Details(string? url)
     {
-        if (_postRepository.Posts.FirstOrDefault(x=>x.Url.Equals(url)) is null)
+        if (_postRepository.Posts.FirstOrDefault(x=>x.Url.Equals(url)) is null ||
+            _postRepository.Posts.FirstOrDefault(x=>x.Url.Equals(url)).IsActive.Equals(false))
         {
             return RedirectToAction("Index");
         }
@@ -71,6 +76,7 @@ public class PostsController : Controller
         
         var post = await _postRepository
             .Posts
+            .Include(x => x.User)
             .Include(x => x.Tags)   // tag bilgileride gelsin -- bu yoksa tagler gelmez
             .Include(x => x.Comments)
             .ThenInclude(x => x.User)   // gitmiş olduğu commenttede user bilgisini alsın... şeklinde
@@ -138,6 +144,7 @@ public class PostsController : Controller
     
     
     [HttpPost]
+    [Authorize]
     public IActionResult Create([FromForm]CreatePostViewModel model)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -161,7 +168,93 @@ public class PostsController : Controller
         return View(model);
     }
 
+    [Authorize]
+    [HttpGet("posts/edit/{id}")]
+    public IActionResult Update([FromRoute]int id)
+    {
+        if (id == null)
+        {
+            return NotFound();
+        }
+        
+        var model = _postRepository
+            .Posts
+            .Include(a => a.Tags)
+            .FirstOrDefault(x => x.PostId.Equals(id));
 
+        ViewBag.Tags = _tagRepository.Tags.ToList();
+        
+        
+        if (model is not null)
+        {
+            return View(new EditPostViewModel()
+            {
+                Content = model.Content,
+                Title = model.Title,
+                Description = model.Description,
+                Image = model.Image,
+                PostId = model.PostId,
+                isActive = model.IsActive,
+                Tags = model.Tags
+            });
+        }
+        
+        return NotFound();
+    }
+
+    [Authorize]
+    [HttpPost("posts/edit/{id}")]
+    [ValidateAntiForgeryToken]
+    public IActionResult Update([FromForm] EditPostViewModel model,int[] TagIds)
+    {
+        string? urlNew = null;
+        
+        if (ModelState.IsValid)
+        {
+            var prevModel = _postRepository.Posts.FirstOrDefault(x => x.PostId.Equals(model.PostId));
+            
+            if (!prevModel.Title.Equals(model.Title))
+            {
+                // title değiştiyse urlde değiscek
+                urlNew =
+                    $"{RemoveNonAlphanumericAndSpecialChars(ReplaceTurkishCharacters(model.Title.Replace(' ', '-').ToLower()))}.{GenerateUniqueHash()}";
+            }
+            
+            
+            // eğer olaki isactive true idi ama mod düzenlerken true olmasına rağmen false olacak -- ben bunu direkt moddada gösterirdim btw
+            if (!User.IsInRole("Admin"))
+            {
+                // neyse o gitsin
+                model.isActive = prevModel.IsActive;
+            }
+            
+            var updateModel = new Post()
+            {
+                Content = model.Content,
+                PostId = model.PostId,
+                Description = model.Description,
+                Title = model.Title,
+                Image = model.Image,
+                Url = urlNew ?? prevModel.Url,
+                IsActive = model.isActive
+            };
+
+            
+            //_postRepository.EditPost(updateModel);
+            
+            // değiştirdik
+            _postRepository.EditPost(updateModel,TagIds);
+            
+            return RedirectToAction("List");
+        }
+
+        // hata varsada bunlar geçsin
+        ViewBag.Tags = _tagRepository.Tags.ToList();
+        
+        return View(model);
+    }
+    
+    
     [Authorize]
     [HttpGet("posts/list")]
     public async Task<IActionResult> List()

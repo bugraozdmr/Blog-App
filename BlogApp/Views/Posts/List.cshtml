@@ -3,7 +3,7 @@
 <div class="row">
     <div class="col-12">
         <h2>Post List</h2>
-        <a href="posts/create" class="btn btn-secondary">Yeni Post</a>
+        <a asp-controller="Posts" asp-action="Create" class="btn btn-secondary">Yeni Post</a>
         <table class="table table-bordered">
             <thead>
             <tr>
@@ -25,7 +25,7 @@
                     <td>@item.Title</td>
                     <td>@item.IsActive</td>
                     <td>
-                        <a href="#" class="btn btn-sm btn-primary">Edit</a>
+                        <a asp-controller="Posts" asp-action="Update" asp-route-id="@item.PostId" class="btn btn-sm btn-primary">Edit</a>
                         <a href="#" class="btn btn-sm btn-danger">Delete</a>
                     </td>
                 </tr>
